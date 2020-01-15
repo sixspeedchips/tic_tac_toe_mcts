@@ -16,6 +16,7 @@ class tree {
   tree(node *root);
   void traverse();
   node* GetRoot();
+  void setRoot(node *pNode);
 };
 
 

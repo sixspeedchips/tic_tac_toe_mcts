@@ -12,22 +12,26 @@ tree::tree(node *root) {
 
 
 void tree::traverse() {
-  stack<node*> stack;
-  stack.push(this->root);
+  deque<node*> queue;
+  queue.push_back(this->root);
   node* curr;
-  while(!stack.empty()){
-    curr = stack.top();
-    stack.pop();
-    for(auto elem: curr->GetChildren()){
-      stack.push(elem.second);
+  while(!queue.empty()){
+    curr = queue.at(0);
+    queue.pop_front();
+    for(auto elem: *curr->getChildren()){
+      queue.push_back(elem.second);
     }
-    PrintVector(curr->GetCurrentState());
-    PrintVector(curr->GetValidMoves());
-    cout << endl;
+    printf("%.8f\n\n",curr->getWinPercent());
+    PrintBoard(curr->getCurrentState());
+//    PrintVector(curr->GetCurrentState());
+//    PrintVector(curr->getValidMoves());
   }
 
 
 }
 node* tree::GetRoot() {
   return this->root;
+}
+void tree::setRoot(node *pNode) {
+  this->root = pNode;
 }
