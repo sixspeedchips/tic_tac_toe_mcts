@@ -2,79 +2,131 @@
 // Created by finn on 1/8/20.
 //
 
-#include <iostream>
 #include <utility>
 #include <numeric>
+#include <vector>
+#include <iostream>
 #include "node.h"
+#include "utils.h"
 
 using namespace std;
 
-void node::AddChild(node *node) {
-  this->children[node->move] = node;
+
+map<int, node *> *node::getChildren() {
+  return &this->children;
 }
 
-int node::GetLastMove() {
-  return this->move;
-}
-
-map<int, node *> node::GetChildren() {
-  return this->children;
-}
 node::node(node *parent, vector<int> state, int move) {
   this->parent = parent;
   this->state = std::move(state);
   this->move = move;
-  this->SetTurn();
-  this->state[move] = this->GetCurrentTurn();
-  this->SetValidMoves();
+  this->setTurn();
+  this->state[move] = this->turn;
 
 }
 
 node::node() {
-  this->parent=nullptr;
+  this->parent = nullptr;
+  this->turn = 1;
+  this->state = vector<int>(9);
 }
 
-node* node::NextMove(int location) {
-  vector<int> next_state(9, 0);
-  copy(this->state.begin(), this->state.end(), next_state.begin());
-  node *child_node = new node(this, next_state, location);
-  return child_node;
-}
 
-int node::GetCurrentTurn() {
-  return this->current_turn;
+vector<int> node::getValidMoves() {
+  vector<int> valid_moves;
+  for (int i = 0; i < 9; i++) {
+    if (this->state[i] == 0) {
+      valid_moves.push_back(i);
+    }
+  }
+  return valid_moves;
 }
-
-vector<int> node::GetValidMoves() {
-  return this->valid_moves;
-}
-vector<int> node::GetCurrentState() {
+vector<int> node::getCurrentState() {
   return this->state;
 }
 
-void node::SetValidMoves() {
-  for (int i = 0; i < 9; i++) {
-    if (this->state[i] == 0) {
-      this->valid_moves.push_back(i);
-
-    }
-  }
+int node::getTurn() {
+ return this->turn;
 }
-void node::SetTurn() {
+void node::setTurn(){
   int sum = accumulate(begin(this->state), end(this->state), 0);
   if (sum == 0) {
-    this->current_turn = 1;
+    this->turn = 1;
   } else {
-    this->current_turn = -1;
+    this->turn = -1;
   }
 }
+
 node *node::getParent() {
   return this->parent;
 }
-node* node::AddChild(int location) {
-  vector<int> next_state(9, 0);
+node *node::getChild(int next_move) {
+  vector<int> next_state(9);
   copy(this->state.begin(), this->state.end(), next_state.begin());
-  node *child_node = new node(this, next_state, location);
-  AddChild(child_node);
+  node *child_node = new node(this, next_state, next_move);
   return child_node;
+}
+
+void node::addChild(node *node) {
+  this->children[node->move] = node;
+}
+
+int node::win() {
+  int sum;
+  for (int i = 0; i < 3; i++) {
+    sum = accumulate(begin(this->state) + i * 3,
+                     begin(this->state) + i * 3 + 3,
+                     0);
+
+    if (abs(sum) == 3) {
+      return sum / 3;
+    }
+    sum = this->state[i] + this->state[i + 3] + this->state[i + 6];
+    if (abs(sum) == 3) {
+      return sum / 3;
+    }
+  }
+  sum = this->state[0] + this->state[4] + this->state[8];
+  if (abs(sum) == 3) {
+    return sum / 3;
+  }
+  sum = this->state[2] + this->state[4] + this->state[6];
+  if (abs(sum) == 3) {
+    return sum / 3;
+  }
+  if (this->getValidMoves().empty()) {
+    return INT8_MIN;
+  }
+  return 0;
+}
+
+void node::update(int outcome, double p_played) {
+  this->played += 1;
+  this->parent_played = p_played;
+  if(outcome == this->turn){
+    this->wins += 1;
+  } else if(outcome == INT8_MIN){
+    this->wins += 1;
+  }
+  this->win_percent = this->wins/this->played;
+  this->uct = this->win_percent + sqrt(2 * log2(this->parent_played) / this->played);
+}
+
+double node::getUct() {
+  return this->uct;
+}
+double node::getPlayed() {
+  return this->played;
+}
+double node::getWinPercent() {
+  return this->win_percent;
+}
+int node::getMove() {
+  return this->move;
+}
+void node::visited() {
+  this->played += 1;
+}
+void node::setParent(node *pNode) {
+  this->parent = pNode;
 }

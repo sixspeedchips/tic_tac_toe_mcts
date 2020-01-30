@@ -3,17 +3,15 @@
 //
 #include <vector>
 #include <iostream>
+#include "node.h"
 using namespace std;
 
 #ifndef TIC_TAC_TOE_MCTS_UTILS_H
 #define TIC_TAC_TOE_MCTS_UTILS_H
 
-void PrintVector(vector<int> v){
+void PrintVector(const vector<int>& v);
 
-  for(auto elem: v){
-    cout << elem;
-  }
-  cout << endl;
-}
+void PrintBoard(const vector<int>& v);
 
+void printMap(node *pNode);
 #endif //TIC_TAC_TOE_MCTS_UTILS_H
