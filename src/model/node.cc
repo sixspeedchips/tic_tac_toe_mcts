@@ -94,8 +94,6 @@ int node::win() {
   if (abs(sum) == 3) {
     return sum / 3;
   }
-
-
   if (this->getValidMoves().empty()) {
     return INT8_MIN;
   }

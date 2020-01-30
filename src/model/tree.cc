@@ -23,8 +23,6 @@ void tree::traverse() {
     }
     printf("%.8f\n\n",curr->getWinPercent());
     PrintBoard(curr->getCurrentState());
-//    PrintVector(curr->GetCurrentState());
-//    PrintVector(curr->getValidMoves());
   }
 
 

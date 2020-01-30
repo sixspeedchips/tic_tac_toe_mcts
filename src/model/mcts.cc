@@ -11,7 +11,6 @@ using namespace std;
 
 mcts::mcts(tree *baseTree) {
   this->base_tree = baseTree;
-  this->steps = 0;
   this->current_node = this->getRoot();
 }
 

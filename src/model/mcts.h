@@ -27,8 +27,8 @@ class mcts {
   int simulation(node *pNode);
   node *expansion(node *pNode);
   void backPropagation(node *pNode, int outcome);
-  double steps;
   node *current_node;
+
 };
 
 
